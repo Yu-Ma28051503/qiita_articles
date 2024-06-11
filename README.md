@@ -1,5 +1,9 @@
 # Qiita articles
 
+暗号系の記事を投稿
+
+Qiitaチートシート：[LINK](https://qiita.com/Qiita/items/c686397e4a0f4f11683d)
+
 ## Qiita CLI
 
 コンテンツをブラウザでプレビューする
