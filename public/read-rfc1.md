@@ -1,10 +1,11 @@
 ---
 title: RFC1を読んでみた！
 tags:
-  - 'Internet''RFC'
+  - Internet
+  - rfc
 private: false
-updated_at: ''
-id: null
+updated_at: '2025-04-08T19:34:23+09:00'
+id: ae0608306a58f44f278f
 organization_url_name: null
 slide: false
 ignorePublish: false
