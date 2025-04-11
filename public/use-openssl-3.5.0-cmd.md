@@ -65,7 +65,6 @@ source ~/.bashrc
 ## ML-KEM
 ML-KEMは格子暗号をベースにした鍵共有アルゴリズムです．
 コマンドライン上で鍵生成，カプセル化，デカプセル化の3つの機能を使ってみます．
-
 まずは秘密鍵と公開鍵を生成します．
 
 **鍵生成**
@@ -74,7 +73,6 @@ openssl genpkey -algorithm ml-kem-512 -out mlkem512.priv -outpubkey mlkem512.pub
 ```
 
 `mlkem512.priv` と `mlkem512.pub` というファイルが生成されていれば成功です．
-
 次に共有秘密をカプセル化します．
 
 **カプセル化**
@@ -83,8 +81,7 @@ openssl pkeyutl -encap -pubin -inkey mlkem512.pub -keyform pem -secret shared-se
 ```
 
 ここで何も出力されず， `shared-secret-enc.bin` と `mlkem512-ct.bin` というファイルが生成されていれば成功です．
-`shared-secret-enc.bin`は共有鍵，`mlkem512-ct.bin`は暗号文です．
-
+`shared-secret-enc.bin`は共有秘密，`mlkem512-ct.bin`は暗号文です．
 最後にカプセル化された暗号文から共有秘密を導出するため，デカプセル化を行います．
 
 **デカプセル化**
@@ -109,13 +106,11 @@ xxd shared-secret-dec.bin
 ```
 
 `shared-secret-enc.bin`と`shared-secret-dec.bin`の値が同じであれば成功です．
-
 今回はML-KEM512を使用しましたが，ML-KEM768，ML-KEM1024も同様に使用できます．
 
 ## ML-DSA
 ML-DSAは格子暗号をベースにした署名アルゴリズムです．
 鍵生成，署名生成，署名検証の3つの機能を使ってみます．
-
 まずは秘密鍵(署名鍵)と公開鍵(検証鍵)を生成します．
 
 **鍵生成**
@@ -124,7 +119,6 @@ openssl genpkey -algorithm ml-dsa-44 -out mldsa44.priv -outpubkey mldsa44.pub -o
 ```
 
 ここで，`mldsa44.priv` と `mldsa44.pub` というファイルが生成されていれば成功です．
-
 次に，署名を生成します．
 
 **署名生成**
@@ -134,7 +128,6 @@ openssl pkeyutl -sign -in test.txt -inkey mldsa44.priv -keyform pem -out test.si
 ```
 
 ここで何も出力されず， `test.sig` というファイルが生成されていれば成功です．
-
 最後に署名 `test.sig` の検証を行います．
 
 **署名検証**
@@ -143,7 +136,6 @@ openssl pkeyutl -verify -pubin -inkey mldsa44.pub -keyform pem -in test.txt -sig
 ```
 
 ここで，`Signature Verified Successfully`と出力されれば成功です．
-
 今回はML-DSA44を使用しましたが，ML-DSA65，ML-DSA87も同様に使用できます．
 
 ## TLSで使ってみる
@@ -167,7 +159,6 @@ openssl x509 -req -in server-csr.pem -CA ca-cert.pem -CAkey ca-key.pem -CAcreate
 ```
 
 ここで，`server-key.pem`がサーバの秘密鍵，`server-cert.pem`がサーバの証明書，`ca-key.pem`がCAの秘密鍵，`ca-cert.pem`がCAの証明書です．
-
 それではTLS通信を行ってみます．
 同時に `tcpdump` を使ってパケットを取得し，後でWiresharkで確認します．
 ターミナルを3つ立ち上げてください．
@@ -221,7 +212,6 @@ x25519からffdhe3072までは従来通りの楕円曲線暗号です．
 ここで，Unknown (0x11ec)というグループが出ていますが，Wiresharkが対応していないためこのような表示になっています．
 このグループはML-KEMではなく，X25519とML-KEM512のハイブリッド暗号化スキームです．
 PQCはまだ歴史が浅いため，今後どちらかが破られたとしても，もう片方が安全ならば通信が解読されないようにするためにハイブリッド方式を採用していると思われます．
-
 次にServer Helloの `Extension: key_share` > `Extension: Key Share extension` > `Key Share Entry` のサポートされているグループを確認します．
 
 ```text
@@ -254,7 +244,6 @@ Certificateレコードを探し次の情報まで辿ってください．
 
 ここで右クリックをして `Export packet Bytes` を選択，Raw dataで `server-key.der` というファイル名で保存します．
 `.bin` が拡張子についてしまうことがあるので `server-key.der` に変更しておきます．
-
 `openssl`コマンドを使って読みやすいように変換して，中身を見てみます．
 
 ```bash
