@@ -1,7 +1,7 @@
 ---
 title: liboqsにSIKEを組み込んでみた
 tags:
-  - ''
+  - cryptography
 private: true
 updated_at: ''
 id: null
