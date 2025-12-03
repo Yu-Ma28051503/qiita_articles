@@ -1,12 +1,12 @@
 ---
 title: ML-DSAの公開鍵は秘密鍵から導出可能か
 tags:
-  - 'security'
-  - 'cryptography'
-  - 'pqc'
+  - Security
+  - cryptography
+  - pqc
 private: true
-updated_at: ''
-id: null
+updated_at: '2025-12-03T15:01:10+09:00'
+id: 9e072c376d97345f1dd8
 organization_url_name: null
 slide: false
 ignorePublish: false
