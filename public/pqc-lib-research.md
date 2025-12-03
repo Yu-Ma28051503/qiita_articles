@@ -1,9 +1,9 @@
 ---
 title: PQC対応している暗号ライブラリの調査
 tags:
-  - 'security'
-  - 'pqc'
-  - 'cryptography'
+  - security
+  - pqc
+  - cryptography
 private: true
 updated_at: ''
 id: null
