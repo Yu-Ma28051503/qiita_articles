@@ -1,13 +1,13 @@
 ---
 title: OpenSSLにおけるML-DSA鍵ファイルフォーマットの調査
 tags:
-  - security
-  - pqc
+  - Security
+  - OpenSSL
   - cryptography
-  - openssl
+  - pqc
 private: true
-updated_at: ''
-id: null
+updated_at: '2025-12-03T11:18:06+09:00'
+id: a9c4fa6d8dbdd3473406
 organization_url_name: null
 slide: false
 ignorePublish: false
