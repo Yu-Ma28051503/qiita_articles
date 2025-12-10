@@ -30,7 +30,7 @@ PQCは一言で言っても様々なアルゴリズムの総称に過ぎませ�
 PQCの中でもNISTがFIPSとして標準化したアルゴリズムのML-KEMとML-DSAに絞って調査しました．
 調査漏れは大いにあるので注意してください．
 
-:::alert warning
+:::note warning
 注意
 調査日は2025年11月26日です．
 必ず最新バージョンを確認してください．
@@ -40,29 +40,29 @@ PQCの中でもNISTがFIPSとして標準化したアルゴリズムのML-KEMと
 
 | ライブラリ名 | 言語 | ML-KEM | ML-DSA | URL | 特徴・備考 |
 |---|---|---|---|---|---|
-| OpenSSL | C | 🟢 | 🟢 | https://openssl-library.org/ \ https://github.com/openssl/openssl | デファクトスタンダード |
-| liboqs | C/C++ | 🟢 | 🟢 | https://openquantumsafe.org/liboqs/ \ https://github.com/open-quantum-safe/liboqs | PQC実装の先駆者 |
+| OpenSSL | C | 🟢 | 🟢 | https://openssl-library.org/ <br> https://github.com/openssl/openssl | デファクトスタンダード |
+| liboqs | C/C++ | 🟢 | 🟢 | https://openquantumsafe.org/liboqs/ <br> https://github.com/open-quantum-safe/liboqs | PQC実装の先駆者 |
 | wolfSSL/wolfCrypt | C | 🟢 | 🟢 | https://github.com/wolfssl/wolfssl | 組み込み向け暗号ライブラリ |
-| LibreSSL | C | ❌ | ❌ | https://www.libressl.org/ \ https://github.com/libressl/portable | OpenSSLのフォーク \ OpenBSD標準 |
+| LibreSSL | C | ❌ | ❌ | https://www.libressl.org/ <br> https://github.com/libressl/portable | OpenSSLのフォーク <br> OpenBSD標準 |
 | SymCrypt | C | 🟢 | 🟢 | https://github.com/microsoft/SymCrypt | Windowsのコア暗号ライブラリ |
-| PSA Certified Crypto API  | C | 🟢 | 🟢 | https://arm-software.github.io/psa-api/ \ https://github.com/arm-software/psa-api | 公式のPQC Extensionsを利用することでPQCが使えるようになる \ Mbed TLSが使用 |
-| libsodium | C | ❌ | ❌ | https://doc.libsodium.org/ \ https://github.com/jedisct1/libsodium | クロスプラットフォーム対応 |
+| PSA Certified Crypto API  | C | 🟢 | 🟢 | https://arm-software.github.io/psa-api/ <br> https://github.com/arm-software/psa-api | 公式のPQC Extensionsを利用することでPQCが使えるようになる <br> Mbed TLSが使用 |
+| libsodium | C | ❌ | ❌ | https://doc.libsodium.org/ <br> https://github.com/jedisct1/libsodium | クロスプラットフォーム対応 |
 | Boringssl | C/C++ | 🟢 | 🟢 | https://github.com/google/boringssl | Chrome/Chromium, AndroidのSSLライブラリ |
-| Crypto++ | C++ | ❌ | ❌ | https://www.cryptopp.com/ \ https://github.com/weidai11/cryptopp | C++で記述された暗号ライブラリ |
+| Crypto++ | C++ | ❌ | ❌ | https://www.cryptopp.com/ <br> https://github.com/weidai11/cryptopp | C++で記述された暗号ライブラリ |
 | Botan | C++ | 🟢 | 🟢 | https://github.com/randombit/botan | BSDライセンスで公開されている |
-| Conscrypt | Java | ❌ | ▲ | https://source.android.com/docs/core/ota/modular-system/conscrypt?hl=ja \ https://github.com/google/conscrypt/tree/master | 公式に発表はされていないが，ML-DSA実装の動きが見られる |
-| Bouncy Castle | Java, C#, Kotlin | 🟢 | 🟢 | https://www.bouncycastle.org/ \ https://github.com/bcgit/bc-csharp | FIPS対応可能 |
-| Go標準ライブラリ | Go | 🟢 | ❌ | https://pkg.go.dev/crypto \ https://cs.opensource.google/go/go/+/master:src/crypto/ | ML-DSAが未対応 |
-| Cloudflare CIRCL | Go | 🟢 | 🟢 | https://github.com/cloudflare/circl \ https://github.com/cloudflare/circl | PQCとECCを中心に開発 |
-| tink-crypto | C++, Java, Go, Python, Objective-C | ❌ | 🟢 | https://developers.google.com/tink?hl=ja \ https://github.com/tink-crypto | KMSとの連携をしやすい |
+| Conscrypt | Java | ❌ | ▲ | https://source.android.com/docs/core/ota/modular-system/conscrypt?hl=ja <br> https://github.com/google/conscrypt/tree/master | 公式に発表はされていないが，ML-DSA実装の動きが見られる |
+| Bouncy Castle | Java, C#, Kotlin | 🟢 | 🟢 | https://www.bouncycastle.org/ <br> https://github.com/bcgit/bc-csharp | FIPS対応可能 |
+| Go標準ライブラリ | Go | 🟢 | ❌ | https://pkg.go.dev/crypto <br> https://cs.opensource.google/go/go/+/master:src/crypto/ | ML-DSAが未対応 |
+| Cloudflare CIRCL | Go | 🟢 | 🟢 | https://github.com/cloudflare/circl <br> https://github.com/cloudflare/circl | PQCとECCを中心に開発 |
+| tink-crypto | C++, Java, Go, Python, Objective-C | ❌ | 🟢 | https://developers.google.com/tink?hl=ja <br> https://github.com/tink-crypto | KMSとの連携をしやすい |
 | Node.js cryptoモジュール | JavaScript | 🟢 | 🟢 | https://nodejs.org/api/crypto.html | Node.js標準の暗号モジュール |
 | RustCrypto | Rust | 🟢 | ❌ | https://github.com/RustCrypto | (おそらく)Rust標準 |
-| libcrux | Rust | 🟢 | 🟢 | https://cryspen.com/libcrux-library/ \ https://github.com/cryspen/libcrux | 形式検証を受けている |
-| pyca | Python | ❌ | ❌ | https://cryptography.io/en/latest/ \ https://github.com/pyca/cryptography | 強気なドメインを使ってる |
-| pycryptodome | Python | ❌ | ❌ | https://pypi.org/project/pycryptodome/ \ https://github.com/Legrandin/pycryptodome | CTFで必ず使われる |
-| defuse/php-encryption | PHP | ❌ | ❌ | https://docs.flightphp.com/ja/v3/awesome-plugins/php-encryption \ https://github.com/defuse/php-encryption |  |
+| libcrux | Rust | 🟢 | 🟢 | https://cryspen.com/libcrux-library/ <br> https://github.com/cryspen/libcrux | 形式検証を受けている |
+| pyca | Python | ❌ | ❌ | https://cryptography.io/en/latest/ <br> https://github.com/pyca/cryptography | 強気なドメインを使ってる |
+| pycryptodome | Python | ❌ | ❌ | https://pypi.org/project/pycryptodome/ <br> https://github.com/Legrandin/pycryptodome | CTFでよく使われる |
+| defuse/php-encryption | PHP | ❌ | ❌ | https://docs.flightphp.com/ja/v3/awesome-plugins/php-encryption <br> https://github.com/defuse/php-encryption |  |
 | CryptX | Perl | ❌ | ❌ | https://metacpan.org/pod/CryptX | |
-| gem crypt | Ruby | ❌ | ❌ | http://crypt.finalstep.com.au/ \ https://rubygems.org/gems/crypt/versions/2.2.1?locale=ja | パスワードハッシュの生成のみの機能 |
+| gem crypt | Ruby | ❌ | ❌ | http://crypt.finalstep.com.au/ <br> https://rubygems.org/gems/crypt/versions/2.2.1?locale=ja | パスワードハッシュの生成のみの機能 |
 | Apple CryptoKit | Swift | 🟢 | 🟢 | https://developer.apple.com/documentation/cryptokit/ | Apple公式 |
 | Common Lisp crypt | Common Lisp | ❌ | ❌ | https://quickref.common-lisp.net/crypt.html | パスワードハッシュの生成のみの機能 |
 | Erlang standard library: crypto | Erlang | ❌ | ❌ | https://security.erlef.org/secure_coding_and_deployment_hardening/crypto | OpenSSL APIを利用 |
