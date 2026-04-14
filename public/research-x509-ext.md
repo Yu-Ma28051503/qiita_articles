@@ -174,7 +174,7 @@ KeyUsageのビットは以下のように使用されます:
 - encipherOnly: 鍵合意(4)が設定されている場合，**鍵合意のデータ暗号化**に使用されることを示すビット
 - decipherOnly: 鍵合意(4)が設定されている場合，**鍵合意のデータ復号化**に使用されることを示すビット
 
-### Certificate Policeis(証明書ポリシー)
+### Certificate Policies(証明書ポリシー)
 
 Certificate Policiesは，1つ以上のポリシー識別子(OID)とオプションのポリシーオプションで構成されており，証明書に関連するポリシーを定義するための拡張です。
 同じ証明書ポリシー拡張内で複数のポリシー識別子を含めることもできますが，同じポリシーを複数回使用することはできません。
@@ -254,6 +254,10 @@ PolicyMappings ::= {
 
 準拠するCAは，この拡張をクリティカルにする必要があります。
 
+マッピングに使われるフィールドは次のような意味を持ちます:
+- issuerDomainPolicy: 発行元CA側のポリシーOID
+- subjectDomainPolicy: 発行先CA側のポリシーOID
+
 OIDは，`2.5.29.33` となっており，ASN.1構文は以下のようになっています:
 
 ```asn1
@@ -267,14 +271,18 @@ PolicyMappings ::= SEQUENCE SIZE (1..MAX) OF SEQUENCE {
 ### Subject Alternative Name(主体別名)
 
 Subject Alternative Nameは，ID(識別子)を証明書の主体者に関連付けるための拡張です。
-
+DNS名，メールアドレス，URI，IPアドレスなど，主体者を表す複数の識別子を1つの証明書に含めたい場合に使用されます。
 別名は公開鍵に確実に関連付けるため，全ての別名はCAによって検証される必要があります。
 
+主体者名(subject)が空で，この拡張のみで主体者を表現する場合，この拡張はクリティカルである必要があります。
+一方，subjectにも名前が入っている場合は非クリティカルとして扱われることが一般的です。
+
+GeneralNameにはさまざまな識別子を入れることができ，TLSサーバ証明書では `dNSName` や `ipAddress` がよく利用されます。
 
 OIDは `2.5.29.17` となっており，ASN.1構文は以下のようになっています:
 
 ```asn1
-id-ce-subjectAltName OBJECT IDENTIFIER ::=  { id-ce 17 (2.5.29.17 ) }
+id-ce-subjectAltName OBJECT IDENTIFIER ::=  { id-ce 17 (2.5.29.17) }
 
 SubjectAltName ::= GeneralNames
 
@@ -318,6 +326,7 @@ IssuerAltName ::= GeneralNames
 
 Subject Directory Attributesは，証明書の主体者に関連付けられた属性を定義するための拡張です。
 関連付けられる属性には，国籍，出身地，性別などが含まれ，[RFC 3739](https://datatracker.ietf.org/doc/html/rfc3739)で解釈されるべき属性が挙げられています。
+個人に関する追加属性をX.509証明書に持たせたい場合に使われることがあります。
 ここで定義されているものでOIDがいくつか定義されています:
 - id-pda-dateOfBirth ::= { id-pkix 9 1 (1.3.6.1.5.5.7.9.1) }
 - id-pda-placeOfBirth ::= { id-pkix 9 2 (1.3.6.1.5.5.7.9.2) }
@@ -338,8 +347,12 @@ SubjectDirectoryAttributes ::= SEQUENCE SIZE (1..MAX) OF Attribute
 ### Basic Constraints(基本制約)
 
 Basic Constraintsは，証明書がCA証明書であるかどうか，およびこの証明書がどのくらいの深さまでCA証明書を発行できるかを示す拡張です。
+中間CA証明書とエンドエンティティ証明書を区別するための重要な拡張であり，証明書パス検証でも利用されます。
 
+CA証明書ではこの拡張を含める必要があり，特に公開鍵が証明書署名に使われる場合はクリティカルである必要があります。
+エンドエンティティ証明書では， `cA` を `FALSE` とするか，この拡張を付けずに運用されます。
 
+`cA` はその証明書がCAとして動作できるかどうかを示し， `pathLenConstraint` はそのCAの下に何段まで中間CAをぶら下げられるかを示します。
 
 OIDは，`2.5.29.19` となっており，ASN.1構文は以下のようになっています:
 
@@ -354,7 +367,11 @@ BasicConstraints ::= SEQUENCE {
 ### Name Constraints(名前制約)
 
 Name Constraintsは，証明書が発行できる証明書の名前を制限するための拡張です。
-この拡張は自己証明書を除くCA証明書でのみ使用でき，
+CAが発行する下位証明書の名前空間を制限したい場合に使用されます。
+この拡張は自己証明書を除くCA証明書でのみ使用でき，含まれている場合はクリティカルでなければなりません。
+
+`permittedSubtrees` は許可する名前空間を， `excludedSubtrees` は禁止する名前空間を表します。
+例えば，特定ドメイン配下のDNS名だけを許可したい場合などに利用されます。
 
 OIDは，`2.5.29.30` となっており，ASN.1構文は以下のようになっています:
 
@@ -379,6 +396,9 @@ BaseDistance ::= INTEGER (0..MAX)
 Policy Constraintsは，証明書パス検証の際に特定のポリシーを必要とするか，または特定のポリシーを禁止するための拡張です。
 この拡張は自己証明書を除くCA証明書でのみ使用でき，この拡張が含まれている場合はクリティカルでなければなりません。
 
+`requireExplicitPolicy` は，何枚先の証明書から明示的なポリシーが必要になるかを示します。
+`inhibitPolicyMapping` は，何枚先の証明書からポリシーマッピングを禁止するかを示します。
+
 OIDは，`2.5.29.36` となっており，ASN.1構文は以下のようになっています:
 
 ```asn1
@@ -386,7 +406,7 @@ id-ce-policyConstraints OBJECT IDENTIFIER ::=  { id-ce 36 (2.5.29.36) }
 
 PolicyConstraints ::= SEQUENCE {
 	requireExplicitPolicy   [0] SkipCerts OPTIONAL,
- 	inhibitPolicyMapping    [1] SkipCerts OPTIONAL }
+	inhibitPolicyMapping    [1] SkipCerts OPTIONAL }
 
 SkipCerts ::= INTEGER (0..MAX)
 ```
@@ -449,6 +469,8 @@ CRLについては，RFC5280のセクション5.2で定義されているCRL構�
 - reasons: CRLに含まれる失効理由を定義するフィールド
 - cRLIssuer: CRLを発行するCAの識別子を定義するフィールド
 
+OIDは，`2.5.29.31` となっており，ASN.1構文は以下のようになっています:
+
 ```asn1
 id-ce-cRLDistributionPoints OBJECT IDENTIFIER ::=  { id-ce 31 (2.5.29.31) }
 
@@ -478,8 +500,12 @@ ReasonFlags ::= BIT STRING {
 ### Inhibit anyPolicy(任意ポリシー禁止)
 
 anyPolicy禁止拡張はCAに発行された証明書で使用できます。
-この拡張は、証明書パス検証の際にanyPolicy識別子を禁止するための拡張です。
+この拡張は，証明書パス検証の際にanyPolicy識別子を禁止するための拡張です。
 この拡張が含まれている場合はクリティカルでなければなりません。
+
+`SkipCerts` は，何枚先の証明書から `anyPolicy` を無効として扱うかを表します。
+
+OIDは，`2.5.29.54` となっており，ASN.1構文は以下のようになっています:
 
 ```asn1
 id-ce-inhibitAnyPolicy OBJECT IDENTIFIER ::=  { id-ce 54 (2.5.29.54) }
@@ -493,6 +519,10 @@ SkipCerts ::= INTEGER (0..MAX)
 
 最新CRL拡張はCRLに使用される拡張で，CRL配布点拡張と同様の構造を持ち，最新のCRL(デルタCRL)の取得方法を示すための拡張です。
 この拡張が含まれている場合は非クリティカルでなければなりません。
+
+完全なCRLではなく差分CRLを取得したい場合に参照され，構造自体は `CRLDistributionPoints` を再利用しています。
+
+OIDは，`2.5.29.46` となっており，ASN.1構文は以下のようになっています:
 
 ```asn1
 id-ce-freshestCRL OBJECT IDENTIFIER ::=  { id-ce 46 (2.5.29.46) }
@@ -509,7 +539,7 @@ OIDは次のように定義されています:
 ```asn1
 id-pkix OBJECT IDENTIFIER ::=  { iso(1) identified-organization(3) dod(6) internet(1) security(5) mechanisms(5) pkix(7) (1.3.6.1.5.5.7) }
 
-id-pe OBJECT IDENTIFIER ::=  { id-pe 1 (1.3.6.1.5.5.7.1) }
+id-pe OBJECT IDENTIFIER ::=  { id-pkix 1 (1.3.6.1.5.5.7.1) }
 ```
 
 ### Authority Information Access(発行者情報アクセス)
@@ -518,8 +548,13 @@ id-pe OBJECT IDENTIFIER ::=  { id-pe 1 (1.3.6.1.5.5.7.1) }
 証明書を発行したCAの証明書またはOCSPレスポンスヘッダへのアクセス方法を定義するために使用されます。
 この拡張はエンドエンティティ証明書またはCA証明書に含まれている場合があり，非クリティカルである必要があります。
 
+`accessMethod` には情報の種類を， `accessLocation` にはその取得先を入れます。
+代表的な `accessMethod` として，発行者CA証明書の取得先を示す `id-ad-caIssuers` と，OCSPレスポンダを示す `id-ad-ocsp` があります。
+
+OIDは，`1.3.6.1.5.5.7.1.1` となっており，ASN.1構文は以下のようになっています:
+
 ```asn1
-id-ce-authorityInfoAccess OBJECT IDENTIFIER ::=  { id-ce 1 (2.5.29.1) }
+id-pe-authorityInfoAccess OBJECT IDENTIFIER ::=  { id-pe 1 (1.3.6.1.5.5.7.1.1) }
 
 AuthorityInfoAccessSyntax ::= SEQUENCE SIZE (1..MAX) OF AccessDescription
 
@@ -535,10 +570,15 @@ id-ad-ocsp OBJECT IDENTIFIER ::=  { id-ad 1 (1.3.6.1.5.5.7.48.1) }
 
 ### Subject Information Access(主体者情報アクセス)
 
-主体車情報アクセス拡張は，証明書の主体者に関連する情報へのアクセス方法を定義するための拡張です。
+主体者情報アクセス拡張は，証明書の主体者に関連する情報へのアクセス方法を定義するための拡張です。
 主体者がCAの場合，証明書検証のための情報とCAポリシーデータが含まれることがあります。
 主体者がエンティティの場合，情報が提供されるサービスタイプとアクセス方法が含まれることがあります。
 この拡張は非クリティカルとしてマークする必要があります。
+
+Authority Information Accessと同様に， `accessMethod` が情報の種類， `accessLocation` が取得先を表します。
+代表例として，CAリポジトリを示す `id-ad-caRepository` やタイムスタンプサービスを示す `id-ad-timeStamping` が使われます。
+
+OIDは，`1.3.6.1.5.5.7.1.11` となっており，ASN.1構文は以下のようになっています:
 
 ```asn1
 id-pe-subjectInfoAccess OBJECT IDENTIFIER ::=  { id-pe 11 (1.3.6.1.5.5.7.1.11) }
@@ -553,7 +593,7 @@ id-ad OBJECT IDENTIFIER ::=  { id-pkix 48 (1.3.6.1.5.5.7.48) }
 
 id-ad-caRepository OBJECT IDENTIFIER ::=  { id-ad 5 (1.3.6.1.5.5.7.48.5) }
 
-id-ad-timestamp OBJECT IDENTIFIER ::=  { id-ad 3 (1.3.6.1.5.5.7.48.3) }
+id-ad-timeStamping OBJECT IDENTIFIER ::=  { id-ad 3 (1.3.6.1.5.5.7.48.3) }
 ```
 
 # 最後に
